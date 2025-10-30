@@ -1,5 +1,6 @@
 package org.com.programming.segurancaTest.service;
 
+import org.com.programming.segurancaTest.entities.DTOusuario.DTOcreateUsuario;
 import org.com.programming.segurancaTest.entities.DTOusuario.UsuarioDTO;
 import org.com.programming.segurancaTest.entities.UsuarioEntity;
 import org.com.programming.segurancaTest.jpa.JpaUsuario;
@@ -16,16 +17,27 @@ public class ServiceUsuario {
         this.jpaUsuario = jpaUsuario;
     }
 
-
-    public UsuarioEntity usuarioCreate(UsuarioDTO usuarioDTO){
+    /* Aqui é o seguinte, o usuário só vai se criar. Ele não precisa ter uma lista de tarefas de forma obrigatória. */
+    public DTOcreateUsuario usuarioCreate(UsuarioDTO usuarioDTO){
         UsuarioEntity user = new UsuarioEntity();
         user.setUserName(usuarioDTO.nomeUsuario());
         user.setUserPassword(usuarioDTO.passwordUsuario());
-        return jpaUsuario.save(user);
+        UsuarioEntity obj = jpaUsuario.save(user);
+
+        return new DTOcreateUsuario(obj.getIdUser(), obj.getUserName());
     }
 
-    public List<UsuarioEntity> usuarioEntities(){
-        List<UsuarioEntity> obj = jpaUsuario.findAll();
+    /* Agora precisamos criar uma lista de usuários que será:
+    * {
+    *   "nomeUsuario": "Vivian"
+    *   "list-TodoList": [
+    *                     ["Descrição": "Minha tarefa"
+    *                      "Finalizada": True],
+    *                      ["Descrição": "Minha tarefa"
+     *                      "Finalizada": True]
+     *                  ]
+     * }
+}*/
 
-    }
+    
 }

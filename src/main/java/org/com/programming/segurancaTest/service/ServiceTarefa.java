@@ -1,6 +1,7 @@
 package org.com.programming.segurancaTest.service;
 
-import org.com.programming.segurancaTest.entities.DTOtarefas.CreateTarefaDTO;
+import org.com.programming.segurancaTest.entities.DTOtarefas.RequestCreateTarefa;
+import org.com.programming.segurancaTest.entities.DTOtarefas.DTOcreateTarefa;
 import org.com.programming.segurancaTest.entities.TarefaEntity;
 import org.com.programming.segurancaTest.entities.UsuarioEntity;
 import org.com.programming.segurancaTest.jpa.JpaTarefas;
@@ -17,19 +18,17 @@ public class ServiceTarefa {
         this.jpaUsuario = jpaUsuario;
     }
 
-    public TarefaEntity tarefaCreate(CreateTarefaDTO createTarefaDTO){
-        UsuarioEntity obj = jpaUsuario.getReferenceById(createTarefaDTO.idUser());
-       if(obj != null){
-           TarefaEntity entity = new TarefaEntity();
-           entity.setDescricao(createTarefaDTO.descricao());
-           entity.setConcluida(createTarefaDTO.concluida());
-           entity.setUsuarioEntity(obj);
+    public DTOcreateTarefa tarefaCreate(RequestCreateTarefa requestCreateTarefa){
+        UsuarioEntity obj = jpaUsuario.getReferenceById(requestCreateTarefa.idUser()); /* Procuro o usuário. */
 
-           /* PRECISO RETORNAR UM DTO QUE SÓ TENHA O NOME DO USUÁRIO E A LISTA DE TAREFAS. */
-           /* CRIARIA UM OUTRO DTO PARA FAZER O RETORNO SIMPLES. A NÃO SER QUE USEMOS createTarefaDTO como retorno. */
-       } else {
-           System.out.println("Errou.");
-       }
+        TarefaEntity entity = new TarefaEntity();
+        entity.setDescricao(requestCreateTarefa.descricao());
+        entity.setConcluida(requestCreateTarefa.concluida());
+        entity.setUsuarioEntity(obj);
+        TarefaEntity tarefas = jpaTarefas.save(entity);
+        /* AGORA QUE A TAREFA ESTÁ SALVA, VAMOS CRIAR UM DTO PARA RETORNAR A RESPOSTA PARA O USUÁRIO. */
+        return new DTOcreateTarefa(tarefas.getDescricao(), tarefas.getConcluida(), tarefas.getUsuarioEntity().getUserName());
+
 
     }
 }
