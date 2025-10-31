@@ -4,10 +4,13 @@ import org.com.programming.segurancaTest.entities.DTOtarefas.DTOcreateTarefa;
 import org.com.programming.segurancaTest.entities.DTOtarefas.RequestCreateTarefa;
 import org.com.programming.segurancaTest.entities.DTOusuario.DTOcreateUsuario;
 import org.com.programming.segurancaTest.entities.DTOusuario.UsuarioDTO;
+import org.com.programming.segurancaTest.entities.DTOusuario.UsuarioListDTO;
 import org.com.programming.segurancaTest.service.ServiceTarefa;
 import org.com.programming.segurancaTest.service.ServiceUsuario;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("teste")
 @RestController
@@ -31,5 +34,11 @@ public class Controller {
     public ResponseEntity<DTOcreateUsuario> criarUsuario(@RequestBody UsuarioDTO usuarioDTO){
         DTOcreateUsuario  obj = serviceUsuario.usuarioCreate(usuarioDTO);
         return ResponseEntity.ok(obj);
+    }
+
+    @GetMapping("listAll")
+    public ResponseEntity<List<UsuarioListDTO>> entityLista(){
+        List<UsuarioListDTO> listagem = serviceUsuario.usuarioEntities();
+        return ResponseEntity.ok(listagem);
     }
 }

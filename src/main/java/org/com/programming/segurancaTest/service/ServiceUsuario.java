@@ -1,8 +1,11 @@
 package org.com.programming.segurancaTest.service;
 
+import org.com.programming.segurancaTest.entities.DTOtarefas.TarefasLisAuxDTO;
 import org.com.programming.segurancaTest.entities.DTOusuario.DTOcreateUsuario;
 import org.com.programming.segurancaTest.entities.DTOusuario.UsuarioDTO;
+import org.com.programming.segurancaTest.entities.DTOusuario.UsuarioListDTO;
 import org.com.programming.segurancaTest.entities.UsuarioEntity;
+import org.com.programming.segurancaTest.jpa.JpaTarefas;
 import org.com.programming.segurancaTest.jpa.JpaUsuario;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +15,11 @@ import java.util.List;
 public class ServiceUsuario {
 
     private final JpaUsuario jpaUsuario;
+    private final JpaTarefas jpaTarefas;
 
-    public ServiceUsuario(JpaUsuario jpaUsuario) {
+    public ServiceUsuario(JpaUsuario jpaUsuario, JpaTarefas jpaTarefas) {
         this.jpaUsuario = jpaUsuario;
+        this.jpaTarefas = jpaTarefas;
     }
 
     /* Aqui é o seguinte, o usuário só vai se criar. Ele não precisa ter uma lista de tarefas de forma obrigatória. */
@@ -26,18 +31,20 @@ public class ServiceUsuario {
 
         return new DTOcreateUsuario(obj.getIdUser(), obj.getUserName());
     }
-
-    /* Agora precisamos criar uma lista de usuários que será:
-    * {
-    *   "nomeUsuario": "Vivian"
-    *   "list-TodoList": [
-    *                     ["Descrição": "Minha tarefa"
-    *                      "Finalizada": True],
-    *                      ["Descrição": "Minha tarefa"
-     *                      "Finalizada": True]
-     *                  ]
-     * }
-}*/
-
     
+    public List<UsuarioListDTO> usuarioEntities(){
+
+        /* Dessa forma não reconhece que é do usuário.*/
+        return jpaUsuario.findAll().stream()
+                .map(usuarioEntity -> {
+                    List<TarefasLisAuxDTO> tarefasLisAuxDTOS = usuarioEntity.getTarefaEntities()
+                            .stream().map(c -> new TarefasLisAuxDTO(c.getDescricao(), c.getConcluida())).toList();
+                    return new UsuarioListDTO(usuarioEntity.getUserName(), tarefasLisAuxDTOS);
+                }).toList();
+
+        /* Aqui é o seguinte:
+        * 1 -> Vou percorrer uma lista de usuários usando o jpaUsuario.
+        * 2 -> Para cada lista de tarefa do usuário, eu vou montar o seu DTO.
+        * 3 -> No final retornaremos um novo DTO de UsuarioListDTO formatado. */
+    }
 }
